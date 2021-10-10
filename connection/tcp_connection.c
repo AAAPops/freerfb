@@ -11,7 +11,7 @@
 
 #include "../log/log.h"
 #include "tcp_connection.h"
-#include "../utils.h"
+#include "../utils/utils.h"
 
 
 /******************* Server's functions *******************/
@@ -283,7 +283,7 @@ int conn_to_srv(const char *addr_str, const char *port_str) {
         log_fatal("Socket creation failed...");
         return -1;
     }
-    log_info("Socket successfully created..");
+    log_trace("Socket successfully created..");
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;

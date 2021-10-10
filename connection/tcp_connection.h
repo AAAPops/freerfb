@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <getopt.h>
 
-#define POLL_TIMEOUT  5 * 1000
+#define POLL_TIMEOUT    5 * 1000
+#define READ_ALL_DATA  -1
 #define MEMZERO(x)	memset(&(x), 0, sizeof (x));
 
 

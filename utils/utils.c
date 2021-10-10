@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <sys/time.h>
 
+#define MEMZERO(x)	memset(&(x), 0, sizeof (x));
+
+
 double stopwatch(char* label, double timebegin) {
     struct timeval tv;
 

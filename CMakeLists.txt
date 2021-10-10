@@ -10,4 +10,5 @@ add_subdirectory(tests)
 add_executable(freerfb main.c
         log/log.c
         connection/tcp_connection.c
-        )
+        utils/utils.c
+        common/common.h)
