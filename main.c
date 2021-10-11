@@ -15,6 +15,9 @@
 #include "log/log.h"
 #include "utils/utils.h"
 #include "common/common.h"
+#include "common/inbuf.h"
+#include "rfb/protover.h"
+#include "rfb/auth.h"
 
 
 #define ARGV_LAST_STR   "127.0.0.1:5901"
@@ -27,8 +30,9 @@
 
 enum {PEERFD = 0, KBDFD, MAXFD, MOUSEFD, DISPFD};
 
+enum {PROTOVER_PH, SEC_PH, INIT_PH, MSG_PH, ERR_PH = -1} currPhase;
 
-
+inbuff_struct inBuff;
 
 
 int fill_pollfds(struct pollfd *pollfds, int peerfd, int kbdfd)
@@ -43,113 +47,6 @@ int fill_pollfds(struct pollfd *pollfds, int peerfd, int kbdfd)
         pollfds[KBDFD].events = POLLIN;
     } else
         pollfds[KBDFD].fd = -1;
-
-    return 0;
-}
-
-int inBuff_init(size_t buff_size) {
-    inBuff.ptr = (uint8_t*)malloc(buff_size);
-    if( !inBuff.ptr ) {
-        log_fatal("Not able to create Buffer for input messages");
-        return -1;
-    }
-
-    inBuff.inuse = 0;
-    inBuff.curr = inBuff.ptr;
-    inBuff.total_sz = INBUFF_INIT_SZ;
-
-    return 0;
-}
-
-void inBuff_reset(void) {
-    inBuff.inuse = 0;
-    inBuff.curr = inBuff.ptr;
-}
-
-void inBuff_expand(void) {
-
-}
-
-
-int protover_phase(int fd)
-{
-#define PROTO_VER_SZ 12
-
-    log_trace("%s()", __FUNCTION__);
-    inBuff_reset();
-
-    ssize_t nbytes = recv_payload(fd, inBuff.ptr, inBuff.total_sz, READ_ALL_DATA);
-    log_trace("nbytes = %d", nbytes);
-    if (nbytes < 0) {
-        log_fatal("Server [fd = #%d] closed connection", fd);
-        return -1;
-    }
-    inBuff.inuse = nbytes;
-
-    if( inBuff.inuse == PROTO_VER_SZ ) {
-        log_debug("<<< %s", inBuff.curr);
-
-        send_payload(fd, inBuff.ptr, inBuff.inuse);
-        log_debug(">>> %s", inBuff.curr);
-    } else {
-        // Print Reason-string here
-        log_fatal("<<< %s", inBuff.curr);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-int security_phase(int fd)
-{
-#define REASON_STR_OFFSET 5
-#define SEC_TYPES_MAX 255
-
-#define VNC_AUTH 2
-
-    uint8_t aSecType[SEC_TYPES_MAX] = {0};
-
-    log_trace("%s()", __FUNCTION__);
-    inBuff_reset();
-
-
-    ssize_t nbytes = recv_payload(fd, inBuff.ptr, inBuff.total_sz, READ_ALL_DATA);
-    log_trace("nbytes = %d", nbytes);
-    if (nbytes < 0) {
-        log_fatal("Server [fd = #%d] closed connection", fd);
-        return -1;
-    }
-    inBuff.inuse = nbytes;
-
-    uint8_t num_of_sec_types = *(uint8_t*)inBuff.curr;
-
-    log_debug("<<< number-of-security-types = %d", num_of_sec_types);
-    if (num_of_sec_types == 0) {
-        inBuff.curr += REASON_STR_OFFSET;
-        log_fatal("<<< %s ", inBuff.curr);
-
-        return -1;
-    }
-
-    inBuff.curr += 1;
-    for(int i = 0; i < num_of_sec_types; i++) {
-        inBuff.curr += i;
-
-        uint8_t arr_idx = *(uint8_t*)(inBuff.curr);
-        uint8_t tmp_val = *(uint8_t*)(inBuff.curr);
-        aSecType[arr_idx] = tmp_val;
-        log_debug("aSecType[%d] = %d", arr_idx, tmp_val);
-    }
-
-    if( aSecType[2] != VNC_AUTH )
-        return -1;
-
-    uint8_t security_type = VNC_AUTH;
-
-    send_payload(fd, &security_type, 1);
-    log_debug(">>> %d", security_type);
-    
 
     return 0;
 }

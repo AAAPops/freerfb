@@ -11,4 +11,8 @@
 
 double stopwatch(char* label, double timebegin);
 
+void memdump(char *name, uint8_t *buff, size_t len, uint8_t column_n);
+
+char * memdump2str(uint8_t *buff, uint8_t len);
+
 #endif // _UTILS_H

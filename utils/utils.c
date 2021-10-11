@@ -3,6 +3,8 @@
 //
 #include <stdio.h>
 #include <sys/time.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #define MEMZERO(x)	memset(&(x), 0, sizeof (x));
 
@@ -31,4 +33,33 @@ double stopwatch(char* label, double timebegin) {
 
       return 0;
     }
+}
+
+
+// Convert memory dump to hex
+void memdump(char *name, uint8_t *buff, size_t len, uint8_t column_n) {
+    size_t idx;
+
+    printf("%s: ============== memory dump from 0x%p  [len=%lu]\n", name, buff, len);
+
+    printf("  ");
+    for( idx = 0; idx < len; idx++) {
+        if( idx > 0 && idx%column_n == 0)
+            printf("\n  ");
+        printf("%02x ", *(buff + idx));
+    }
+
+    printf("\n");
+}
+
+char * memdump2str(uint8_t *buff, uint8_t len) {
+    size_t idx;
+
+    char *str = (char*)calloc(len * 3 + 1, sizeof(char));
+
+    for( idx = 0; idx < len; idx++) {
+        sprintf(str + 3*idx, "%02x ", *(buff + idx));
+    }
+
+    return str;
 }
