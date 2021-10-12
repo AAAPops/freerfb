@@ -11,7 +11,7 @@ extern inbuff_struct inBuff;
 
 int security_phase(int fd)
 {
-    log_set_level(LOG_TRACE);
+    //log_set_level(LOG_TRACE);
     log_trace("%s()", __FUNCTION__);
 
     uint8_t aSecType[SEC_TYPES_MAX] = {0};
