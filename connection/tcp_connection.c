@@ -9,9 +9,8 @@
 #include <sys/un.h>
 #include <arpa/inet.h>
 
-#include "../log/log.h"
+#include "common.h"
 #include "tcp_connection.h"
-#include "../utils/utils.h"
 
 
 /******************* Server's functions *******************/

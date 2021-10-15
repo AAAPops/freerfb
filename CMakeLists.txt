@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 99)
 add_definitions(-DLOG_USE_COLOR)
 
 #add_subdirectory(log)
+include_directories(include)
 #add_subdirectory(connection)
 add_subdirectory(tests)
 

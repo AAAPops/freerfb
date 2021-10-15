@@ -11,8 +11,8 @@
 #include <poll.h>
 #include <string.h>
 
-#include "../connection/tcp_connection.h"
-#include "../log/log.h"
+#include "tcp_connection.h"
+#include "log.h"
 
 #define SRV_STR     "127.0.0.1:7777"
 #define IP_ADDR_SZ  sizeof("127.127.127.127") + 1

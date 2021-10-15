@@ -11,14 +11,10 @@
 #include <poll.h>
 #include <string.h>
 
-#include "connection/tcp_connection.h"
-#include "log/log.h"
-#include "utils/utils.h"
-#include "common/common.h"
-#include "common/inbuf.h"
-#include "rfb/protover.h"
-#include "rfb/auth.h"
-#include "rfb/init.h"
+#include "common.h"
+#include "protover.h"
+#include "auth.h"
+#include "init.h"
 
 
 #define ARGV_LAST_STR   "127.0.0.1:5901"
@@ -34,7 +30,8 @@ enum {PEERFD = 0, KBDFD, MAXFD, MOUSEFD, DISPFD};
 
 enum {PROTOVER_PH, SEC_PH, INIT_PH, MSG_PH, ERR_PH = -1} currPhase;
 
-inbuff_struct inBuff;
+inbuff_struct  inBuff;
+srv_framebuff_struct  srvFramebuff;
 
 
 int fill_pollfds(struct pollfd *pollfds, int peerfd, int kbdfd)
@@ -135,7 +132,7 @@ int main(int argc, char* argv[])
                     break;
 
                 case INIT_PH:
-                    //ret = init_phase(peerfd);
+                    ret = init_phase(peerfd);
                     if( ret != 0 )
                         goto err;
 

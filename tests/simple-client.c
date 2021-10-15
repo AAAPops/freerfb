@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "../connection/tcp_connection.h"
-#include "../log/log.h"
+#include "tcp_connection.h"
+#include "log.h"
 
 char *msg[] = {"Hello", "How are you", "Bye",
                "Long Long string of text 123456789987456321097854612302125467893215648",

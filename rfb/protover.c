@@ -1,7 +1,4 @@
-#include "../common/common.h"
-#include "../log/log.h"
-#include "../common/inbuf.h"
-#include "../connection/tcp_connection.h"
+#include "common.h"
 #include "protover.h"
 
 extern inbuff_struct inBuff;

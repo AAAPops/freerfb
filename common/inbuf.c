@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "../common/common.h"
-#include "../log/log.h"
+#include "common.h"
 #include "inbuf.h"
 
 extern inbuff_struct inBuff;

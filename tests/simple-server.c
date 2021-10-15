@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "../connection/tcp_connection.h"
-#include "../log/log.h"
+#include "tcp_connection.h"
+#include "log.h"
 
 struct _tst1 {
     char *str;

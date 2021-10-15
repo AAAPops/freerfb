@@ -1,12 +1,8 @@
 #include <arpa/inet.h>
 
-#include "../common/common.h"
-#include "../log/log.h"
-#include "../common/inbuf.h"
-#include "../connection/tcp_connection.h"
-#include "../utils/utils.h"
-#include "../utils/d3des.h"
+#include "common.h"
 #include "auth.h"
+#include "d3des.h"
 
 extern inbuff_struct inBuff;
 
@@ -102,13 +98,18 @@ int security_phase(int fd, char *vncpasswd)
     if( log_get_level() == LOG_TRACE )
         memdump("<<< SecurityResult", inBuff.curr, inBuff.inuse, 64);
 
-    uint32_t sec_result = htonl(*(uint32_t*)inBuff.curr);
+    uint32_t sec_result = ntohl(*(uint32_t*)inBuff.curr);
     if( sec_result != 0 ) {
         log_fatal("Authentication: Authentication failed");
         return -1;
     }
     log_info("Authentication: Ok");
+    inBuff_reset();
 
+
+    uint8_t shared_flag = SHARED_FLAG;
+    send_payload(fd, &shared_flag, 1);
+    log_debug(">>> Share VNC desktop: %s", (shared_flag = 1) ? "Yes" : "No");
 
     return 0;
 }
