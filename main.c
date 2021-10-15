@@ -18,9 +18,11 @@
 #include "common/inbuf.h"
 #include "rfb/protover.h"
 #include "rfb/auth.h"
+#include "rfb/init.h"
 
 
 #define ARGV_LAST_STR   "127.0.0.1:5901"
+#define VNC_PASSWD      "123456"
 #define LOG_DEF_LEVEL   LOG_DEBUG
 //#define LOG_DEF_LEVEL   LOG_TRACE
 
@@ -125,11 +127,19 @@ int main(int argc, char* argv[])
                     break;
 
                 case SEC_PH:
-                    ret = security_phase(peerfd);
+                    ret = security_phase(peerfd, VNC_PASSWD);
                     if( ret != 0 )
                         goto err;
 
                     currPhase = INIT_PH;
+                    break;
+
+                case INIT_PH:
+                    //ret = init_phase(peerfd);
+                    if( ret != 0 )
+                        goto err;
+
+                    currPhase = MSG_PH;
                     break;
 
                 default:

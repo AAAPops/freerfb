@@ -5,11 +5,12 @@
 #include "../common/inbuf.h"
 #include "../connection/tcp_connection.h"
 #include "../utils/utils.h"
+#include "../utils/d3des.h"
 #include "auth.h"
 
 extern inbuff_struct inBuff;
 
-int security_phase(int fd)
+int security_phase(int fd, char *vncpasswd)
 {
     //log_set_level(LOG_TRACE);
     log_trace("%s()", __FUNCTION__);
@@ -72,12 +73,20 @@ int security_phase(int fd)
     log_debug("<<< Challange: '%s'", str1);
     free(str1);
 
+    uint8_t challenge[CHALLENGE_SZ];
+    memcpy(challenge, inBuff.ptr, CHALLENGE_SZ);
 
-    uint8_t challenge_response[] = {0x68, 0xcb, 0x40, 0xf9, 0x82, 0xeb, 0x7a,
-                                    0x91, 0xd1, 0x18, 0xaf, 0x39, 0x30, 0x02, 0x72, 0x41};
+    uint8_t hexkey[16] = {0};
+    for (int i = 0; i < 8; i++)
+        hexkey[i] = i < strlen(vncpasswd) ? vncpasswd[i] : 0;
+    deskey(hexkey, EN0);
 
-    send_payload(fd, challenge_response, sizeof(challenge_response));
-    char *str2 =  memdump2str(challenge_response, sizeof(challenge_response));
+    uint8_t challenge_response[CHALLENGE_SZ] = {0};
+    des(challenge + 0, challenge_response + 0);
+    des(challenge + 8, challenge_response + 8);
+
+    send_payload(fd, challenge_response, CHALLENGE_SZ);
+    char *str2 =  memdump2str(challenge_response, CHALLENGE_SZ);
     log_debug(">>> Challange response: '%s'", str2);
     free(str2);
 
@@ -98,6 +107,8 @@ int security_phase(int fd)
         log_fatal("Authentication: Authentication failed");
         return -1;
     }
+    log_info("Authentication: Ok");
+
 
     return 0;
 }

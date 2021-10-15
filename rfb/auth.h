@@ -7,6 +7,6 @@
 #define VNC_AUTH 2
 #define CHALLENGE_SZ    16
 
-int security_phase(int fd);
+int security_phase(int fd, char *vncpasswd);
 
 #endif
